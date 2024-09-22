@@ -3,6 +3,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -14,9 +15,9 @@ jobs:
 
       - name: Run linter and type checker
         run: |
-          poetry run ruff format .
-          poetry run ruff check .
-          poetry run mypy .
+          uv run ruff format .
+          uv run ruff check .
+          uv run mypy .
 
   tests:
     runs-on: ubuntu-latest
@@ -28,4 +29,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run tests
-        run: poetry run pytest
+        run: |
+          uv run coverage run --source=app -m pytest
+          uv run coverage report --show-missing
+          uv run coverage html
