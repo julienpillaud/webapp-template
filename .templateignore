@@ -1,5 +1,0 @@
-app/*
-tests/*
-pyproject.toml
-README.md
-uv.lock
