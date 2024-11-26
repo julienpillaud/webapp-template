@@ -16,5 +16,5 @@ runs:
       shell: sh
 
     - name: Install the project
-      run: uv sync --all-extras --dev
+      run: uv sync --all-extras
       shell: sh
