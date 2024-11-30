@@ -4,6 +4,9 @@ version = "0.0.3"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.115.5",
+    "psycopg[binary]>=3.2.3",
+    "pydantic-settings>=2.6.1",
+    "sqlalchemy>=2.0.36",
 ]
 
 [tool.uv]
@@ -12,7 +15,7 @@ dev-dependencies = [
     "mypy>=1.13.0",
     "pre-commit>=4.0.1",
     "pytest>=8.3.3",
-    "ruff>=0.8.0",
+    "ruff>=0.8.1",
 ]
 
 [tool.ruff]
@@ -31,3 +34,9 @@ select = [
 
 [tool.mypy]
 strict = true
+
+[tool.pytest.ini_options]
+addopts = "-q --no-header --tb=no"
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(name)30s - %(message)s"

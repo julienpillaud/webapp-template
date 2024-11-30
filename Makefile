@@ -1,4 +1,7 @@
-.PHONY: help init check test cov lint
+.PHONY: help init check docker-up docker-down test cov lint
+
+include tests/.env.test
+export
 
 help:
 	@echo "Available targets:"
@@ -17,6 +20,17 @@ check:
 	uv tree -d 1 --outdated
 	uv run pre-commit autoupdate
 
+docker-up:
+	docker compose up -d postgres
+	@until docker compose exec postgres pg_isready; \
+	do \
+		echo "Waiting for postgres..."; \
+		sleep 1; \
+	done
+
+docker-down:
+	docker compose down
+
 test:
 	uv run coverage run --source=app -m pytest
 
@@ -26,5 +40,5 @@ cov: test
 
 lint:
 	uv run ruff format
-	uv run ruff check
+	uv run ruff check --fix
 	uv run mypy .
