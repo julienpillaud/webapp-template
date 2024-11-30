@@ -39,7 +39,7 @@ class User(Base):
     username: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
 
-    address: Mapped[Address | None] = relationship()
+    address: Mapped[Address] = relationship()
     posts: Mapped[list["Post"]] = relationship(back_populates="author")
 
 
@@ -48,7 +48,7 @@ class Post(Base):
     content: Mapped[str]
     author_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
 
-    author: Mapped["User"] = relationship(back_populates="posts")
+    author: Mapped[User] = relationship(back_populates="posts")
     tags: Mapped[list["Tag"]] = relationship(secondary=post_tag)
 
 

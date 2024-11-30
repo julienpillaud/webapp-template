@@ -12,6 +12,7 @@ dependencies = [
 [tool.uv]
 dev-dependencies = [
     "coverage>=7.6.8",
+    "faker>=33.1.0",
     "mypy>=1.13.0",
     "pre-commit>=4.0.1",
     "pytest>=8.3.3",
@@ -36,7 +37,7 @@ select = [
 strict = true
 
 [tool.pytest.ini_options]
-addopts = "-q --no-header --tb=no"
+addopts = "-q --tb=short --log-disable=faker.factory"
 log_cli = true
 log_cli_level = "DEBUG"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(name)30s - %(message)s"
