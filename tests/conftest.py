@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 pytest_plugins = [
     "tests.fixtures.database",
+    "tests.fixtures.repositories",
+    "tests.fixtures.services",
     "tests.fixtures.factories.fixtures",
 ]
 

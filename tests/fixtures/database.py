@@ -12,12 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
-def engine(settings: Settings) -> Engine:
+def engine(settings: Settings) -> Iterator[Engine]:
     logger.debug(f"Creating engine {settings.SQLALCHEMY_DATABASE_URI}")
     engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
-    logger.debug("Creating database tables")
+    logger.debug("Creating database")
     Base.metadata.create_all(engine)
-    return engine
+    yield engine
+    logger.debug("Deleting database")
+    Base.metadata.drop_all(engine)
 
 
 @pytest.fixture
@@ -26,6 +28,7 @@ def session(engine: Engine) -> Iterator[Session]:
         logger.debug("Creating session")
         yield session
 
+        session.rollback()
         logger.debug("Deleting database tables")
         for table in reversed(Base.metadata.sorted_tables):
             session.execute(table.delete())

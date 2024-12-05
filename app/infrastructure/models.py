@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, ForeignKey, Table
+from sqlalchemy import Column, ForeignKey, Table, UniqueConstraint
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -33,6 +33,8 @@ class Address(Base):
     country: Mapped[str]
 
     user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("user.id"))
+
+    __table_args__ = (UniqueConstraint("street", "city", "zip_code", "country"),)
 
 
 class User(Base):
