@@ -32,12 +32,15 @@ select = [
     "I",  # isort
     "PL"  # Pylint
 ]
+ignore = [
+    "PLR0913"  # Too many arguments in function definition (6 > 5)
+]
 
 [tool.mypy]
 strict = true
 
 [tool.pytest.ini_options]
-addopts = "-q --tb=short --log-disable=faker.factory"
+addopts = "--log-disable=faker.factory"
 log_cli = true
-log_cli_level = "DEBUG"
+log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(name)30s - %(message)s"

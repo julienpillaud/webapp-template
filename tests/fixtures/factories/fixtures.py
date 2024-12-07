@@ -1,17 +1,18 @@
 import pytest
+from faker import Faker
 from sqlalchemy.orm import Session
 
-from tests.fixtures.factories.factories import AddressFactory, PostFactory, UserFactory
+from tests.fixtures.factories.factories import PostFactory, UserFactory
 
 
 @pytest.fixture
-def address_factory(session: Session) -> AddressFactory:
-    return AddressFactory(session=session)
+def faker() -> Faker:
+    return Faker()
 
 
 @pytest.fixture
-def user_factory(session: Session, address_factory: AddressFactory) -> UserFactory:
-    return UserFactory(session=session, address_factory=address_factory)
+def user_factory(session: Session) -> UserFactory:
+    return UserFactory(session=session)
 
 
 @pytest.fixture

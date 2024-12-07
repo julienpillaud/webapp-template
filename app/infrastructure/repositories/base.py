@@ -5,6 +5,7 @@ from psycopg.errors import UniqueViolation
 from sqlalchemy import Select, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.interfaces import LoaderOption
 
 from app.core.exceptions import RepositoryError
 from app.domain.models.base import (
@@ -31,6 +32,7 @@ class SQLAlchemyRepositoryBase(
     ],
 ):
     model: type[Model_T]
+    default_loading_options: list[LoaderOption] = []
 
     def __init__(self, session: Session):
         self.session = session
@@ -59,14 +61,10 @@ class SQLAlchemyRepositoryBase(
         raise EntityNotFoundError()
 
     def create(self, data: Create_T_contra, /) -> Domain_T:
-        db_model = self.model(**data.model_dump())
+        db_model = self._create_model(data=data)
         self.session.add(db_model)
-        try:
-            self.session.commit()
-        except IntegrityError as err:
-            if isinstance(err.orig, UniqueViolation):
-                raise EntityAlreadyExistsError() from err
-            raise RepositoryError() from err
+
+        self._commit()
 
         return self._to_domain(db_model)
 
@@ -79,7 +77,8 @@ class SQLAlchemyRepositoryBase(
         for key, value in entity_data.items():
             setattr(entity, key, value)
 
-        self.session.commit()
+        self._commit()
+
         return self._to_domain(entity)
 
     def delete(self, entity_id: uuid.UUID, /) -> None:
@@ -94,8 +93,10 @@ class SQLAlchemyRepositoryBase(
         return self.schema.model_validate(model)
 
     def _apply_loading_options(
-        self, stmt: Select[tuple[Model_T]]
+        self, stmt: Select[tuple[Model_T]], **kwargs: Any
     ) -> Select[tuple[Model_T]]:
+        if self.default_loading_options:
+            stmt = stmt.options(*self.default_loading_options)
         return stmt
 
     @staticmethod
@@ -107,3 +108,14 @@ class SQLAlchemyRepositoryBase(
 
         offset = (pagination.page - 1) * pagination.limit
         return stmt.offset(offset).limit(pagination.limit)
+
+    def _create_model(self, data: Create_T_contra) -> Model_T:
+        return self.model(**data.model_dump())
+
+    def _commit(self) -> None:
+        try:
+            self.session.commit()
+        except IntegrityError as err:
+            if isinstance(err.orig, UniqueViolation):
+                raise EntityAlreadyExistsError() from err
+            raise RepositoryError() from err

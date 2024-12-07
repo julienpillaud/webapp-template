@@ -32,7 +32,7 @@ class Address(Base):
     zip_code: Mapped[str]
     country: Mapped[str]
 
-    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
 
     __table_args__ = (UniqueConstraint("street", "city", "zip_code", "country"),)
 
@@ -41,8 +41,8 @@ class User(Base):
     username: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
 
-    address: Mapped[Address] = relationship()
-    posts: Mapped[list["Post"]] = relationship(back_populates="author")
+    address: Mapped[Address] = relationship(cascade="all, delete-orphan")
+    posts: Mapped[list["Post"]] = relationship()
 
 
 class Post(Base):
@@ -50,7 +50,6 @@ class Post(Base):
     content: Mapped[str]
     author_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
 
-    author: Mapped[User] = relationship(back_populates="posts")
     tags: Mapped[list["Tag"]] = relationship(secondary=post_tag)
 
 

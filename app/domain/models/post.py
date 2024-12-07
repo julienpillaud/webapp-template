@@ -1,18 +1,21 @@
-from app.domain.models.base import DomainModel, PostId, TagName
-from app.domain.models.common import UserCompactDomain
+from pydantic import Field
+
+from app.domain.models.base import DomainModel, PostId, TagName, UserId
 
 
 class PostDomain(DomainModel):
     id: PostId
     title: str
     content: str
-    author: UserCompactDomain
+    author_id: UserId
     tags: list[TagName]
 
 
 class PostCreateDomain(DomainModel):
     title: str
     content: str
+    author_id: UserId
+    tags: list[TagName] = Field(default_factory=list)
 
 
 class PostUpdateDomain(DomainModel):

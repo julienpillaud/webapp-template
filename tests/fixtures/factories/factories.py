@@ -33,27 +33,21 @@ class BaseFactory(Generic[T]):
 
 
 class UserFactory(BaseFactory[User]):
-    def __init__(self, session: Session, address_factory: "AddressFactory"):
+    def __init__(self, session: Session):
         super().__init__(session)
-        self.address_factory = address_factory
 
     def _make(self, **kwargs: Any) -> User:
-        address = kwargs.pop("address", self.address_factory.create_one())
-
-        return User(
-            username=kwargs.get("username", self.faker.user_name()),
-            email=kwargs.get("email", self.faker.email()),
-            address=address,
-        )
-
-
-class AddressFactory(BaseFactory[Address]):
-    def _make(self, **kwargs: Any) -> Address:
-        return Address(
+        address = Address(
             street=kwargs.get("street", self.faker.street_address()),
             city=kwargs.get("city", self.faker.city()),
             zip_code=kwargs.get("zip_code", self.faker.postcode()),
             country=kwargs.get("country", self.faker.country()),
+        )
+
+        return User(
+            username=kwargs.get("username", self.faker.user_name()),
+            email=kwargs.get("email", self.faker.unique.email()),
+            address=address,
         )
 
 
@@ -68,7 +62,7 @@ class PostFactory(BaseFactory[Post]):
         tags = kwargs.pop("tags", None)
         if tags is None:
             num_tags = self.faker.random_int(min=1, max=3)
-            tags = [Tag(name=self.faker.word()) for _ in range(num_tags)]
+            tags = [Tag(name=self.faker.unique.word()) for _ in range(num_tags)]
 
         return Post(
             title=kwargs.get("title", self.faker.sentence()),
