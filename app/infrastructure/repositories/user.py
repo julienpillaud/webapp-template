@@ -1,3 +1,4 @@
+import uuid
 from typing import Any
 
 from sqlalchemy import Select
@@ -23,6 +24,21 @@ class UserSQLAlchemyRepository(
     model = User
     schema = UserDomain
     default_loading_options = [selectinload(User.address), noload(User.posts)]
+
+    def update(self, entity_id: uuid.UUID, data: UserUpdateDomain, /) -> UserDomain:
+        user = self._get_entity_by_id(entity_id)
+        user_data = data.model_dump(exclude_unset=True)
+
+        if "address" in user_data:
+            address_data = user_data.pop("address")
+            for key, value in address_data.items():
+                setattr(user.address, key, value)
+
+        for key, value in user_data.items():
+            setattr(user, key, value)
+
+        self._commit()
+        return self._to_domain(user)
 
     def _apply_loading_options(
         self, stmt: Select[tuple[User]], **kwargs: Any

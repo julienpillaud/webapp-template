@@ -57,10 +57,10 @@ class PostFactory(BaseFactory[Post]):
         self.user_factory = user_factory
 
     def _make(self, **kwargs: Any) -> Post:
-        author_id = kwargs.pop("author_id", self.user_factory.create_one().id)
+        if not (author_id := kwargs.get("author_id")):
+            author_id = self.user_factory.create_one().id
 
-        tags = kwargs.pop("tags", None)
-        if tags is None:
+        if not (tags := kwargs.get("tags")):
             num_tags = self.faker.random_int(min=1, max=3)
             tags = [Tag(name=self.faker.unique.word()) for _ in range(num_tags)]
 

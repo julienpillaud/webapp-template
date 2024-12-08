@@ -21,8 +21,8 @@ class Base(DeclarativeBase):
 post_tag = Table(
     "post_tag",
     Base.metadata,
-    Column("post_id", ForeignKey("post.id"), primary_key=True),
-    Column("tag_id", ForeignKey("tag.id"), primary_key=True),
+    Column("post_id", ForeignKey("post.id", ondelete="CASCADE"), primary_key=True),
+    Column("tag_id", ForeignKey("tag.id", ondelete="CASCADE"), primary_key=True),
 )
 
 
@@ -32,7 +32,9 @@ class Address(Base):
     zip_code: Mapped[str]
     country: Mapped[str]
 
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("user.id", ondelete="CASCADE")
+    )
 
     __table_args__ = (UniqueConstraint("street", "city", "zip_code", "country"),)
 
@@ -42,13 +44,15 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
 
     address: Mapped[Address] = relationship(cascade="all, delete-orphan")
-    posts: Mapped[list["Post"]] = relationship()
+    posts: Mapped[list["Post"]] = relationship(cascade="all, delete-orphan")
 
 
 class Post(Base):
     title: Mapped[str]
     content: Mapped[str]
-    author_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    author_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("user.id", ondelete="CASCADE")
+    )
 
     tags: Mapped[list["Tag"]] = relationship(secondary=post_tag)
 
