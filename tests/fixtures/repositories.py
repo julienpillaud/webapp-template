@@ -17,5 +17,7 @@ def user_repository(session: Session) -> UserSQLAlchemyRepository:
 
 
 @pytest.fixture
-def post_repository(session: Session) -> PostSQLAlchemyRepository:
-    return PostSQLAlchemyRepository(session=session)
+def post_repository(
+    session: Session, user_repository: UserSQLAlchemyRepository
+) -> PostSQLAlchemyRepository:
+    return PostSQLAlchemyRepository(session=session, user_repository=user_repository)

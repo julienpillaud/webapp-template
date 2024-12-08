@@ -91,6 +91,18 @@ def test_update_post(
     assert len(result.tags) == len(post.tags)
 
 
+def test_update_post_tags(
+    faker: Faker, post_factory: PostFactory, post_repository: PostSQLAlchemyRepository
+) -> None:
+    post = post_factory.create_one()
+    tags = [TagName(faker.word()) for _ in range(3)]
+    data = PostUpdateDomain(tags=tags)
+
+    result = post_repository.update(post.id, data)
+
+    assert set(result.tags) == set(tags)
+
+
 def test_update_post_not_found(
     faker: Faker, post_repository: PostSQLAlchemyRepository
 ) -> None:

@@ -21,3 +21,4 @@ class PostCreateDomain(DomainModel):
 class PostUpdateDomain(DomainModel):
     title: str | None = None
     content: str | None = None
+    tags: list[TagName] | None = None

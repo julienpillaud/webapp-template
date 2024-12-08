@@ -53,41 +53,37 @@ class SQLAlchemyRepositoryBase(
         return DomainPagination(total=total, limit=len(items), items=items)
 
     def get_by_id(self, entity_id: uuid.UUID, /, **kwargs: Any) -> Domain_T:
-        stmt = select(self.model).where(self.model.id == entity_id)
-        stmt = self._apply_loading_options(stmt=stmt, **kwargs)
-        if entity := self.session.scalar(stmt):
-            return self._to_domain(entity)
-
-        raise EntityNotFoundError()
+        entity = self._get_entity_by_id(entity_id, **kwargs)
+        return self._to_domain(entity)
 
     def create(self, data: Create_T_contra, /) -> Domain_T:
         db_model = self._create_model(data=data)
         self.session.add(db_model)
-
         self._commit()
-
         return self._to_domain(db_model)
 
     def update(self, entity_id: uuid.UUID, data: Update_T_contra, /) -> Domain_T:
-        entity = self.session.get(self.model, entity_id)
-        if not entity:
-            raise EntityNotFoundError()
+        entity = self._get_entity_by_id(entity_id)
 
         entity_data = data.model_dump(exclude_unset=True)
         for key, value in entity_data.items():
             setattr(entity, key, value)
 
         self._commit()
-
         return self._to_domain(entity)
 
     def delete(self, entity_id: uuid.UUID, /) -> None:
-        entity = self.session.get(self.model, entity_id)
-        if not entity:
-            raise EntityNotFoundError()
-
+        entity = self._get_entity_by_id(entity_id)
         self.session.delete(entity)
         self.session.commit()
+
+    def _get_entity_by_id(self, entity_id: uuid.UUID, /, **kwargs: Any) -> Model_T:
+        stmt = select(self.model).where(self.model.id == entity_id)
+        stmt = self._apply_loading_options(stmt=stmt, **kwargs)
+        if entity := self.session.scalar(stmt):
+            return entity
+
+        raise EntityNotFoundError()
 
     def _to_domain(self, model: Model_T, /) -> Domain_T:
         return self.schema.model_validate(model)
