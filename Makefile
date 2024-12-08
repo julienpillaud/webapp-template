@@ -32,9 +32,10 @@ docker-down:
 	docker compose down
 
 test:
-	uv run coverage run --source=app -m pytest
+	uv run pytest
 
-cov: test
+cov:
+	uv run coverage run --source=app -m pytest
 	uv run coverage report --show-missing
 	uv run coverage html
 

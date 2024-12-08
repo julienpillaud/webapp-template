@@ -13,7 +13,7 @@ from app.infrastructure.repositories.user import UserSQLAlchemyRepository
 from tests.fixtures.factories.factories import PostFactory, UserFactory
 
 
-def test_get_all_users(
+def test_get_users(
     user_factory: UserFactory, user_repository: UserSQLAlchemyRepository
 ) -> None:
     count = 3
@@ -26,9 +26,8 @@ def test_get_all_users(
     assert len(results.items) == count
 
 
-def test_get_all_users_first_page(
-    user_factory: UserFactory,
-    user_repository: UserSQLAlchemyRepository,
+def test_get_users_first_page(
+    user_factory: UserFactory, user_repository: UserSQLAlchemyRepository
 ) -> None:
     count = 12
     page = 1
@@ -42,9 +41,8 @@ def test_get_all_users_first_page(
     assert len(results.items) == limit
 
 
-def test_get_all_users_last_page(
-    user_factory: UserFactory,
-    user_repository: UserSQLAlchemyRepository,
+def test_get_users_last_page(
+    user_factory: UserFactory, user_repository: UserSQLAlchemyRepository
 ) -> None:
     count = 12
     page = 3
@@ -59,9 +57,8 @@ def test_get_all_users_last_page(
     assert len(results.items) == remaining
 
 
-def test_get_all_users_empty_page(
-    user_factory: UserFactory,
-    user_repository: UserSQLAlchemyRepository,
+def test_get_users_empty_page(
+    user_factory: UserFactory, user_repository: UserSQLAlchemyRepository
 ) -> None:
     count = 12
     page = 5
@@ -184,6 +181,7 @@ def test_update_user(
     data = UserUpdateDomain(username=faker.user_name())
 
     result = user_repository.update(user.id, data)
+
     assert result.username == data.username
 
 

@@ -1,7 +1,6 @@
 import uuid
 from typing import Any
 
-from app.application.services.address import AddressService
 from app.domain.models.base import DomainPagination, PaginationParams
 from app.domain.models.user import UserCreateDomain, UserDomain, UserUpdateDomain
 from app.domain.repository import AbstractRepository
@@ -11,10 +10,8 @@ class UserService:
     def __init__(
         self,
         repository: AbstractRepository[UserDomain, UserCreateDomain, UserUpdateDomain],
-        address_service: AddressService,
     ) -> None:
         self.repository = repository
-        self.address_service = address_service
 
     def get_all(
         self, pagination: PaginationParams | None = None, **kwargs: Any

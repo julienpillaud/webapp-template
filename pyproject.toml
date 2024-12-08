@@ -41,6 +41,9 @@ strict = true
 
 [tool.pytest.ini_options]
 addopts = "--log-disable=faker.factory"
+testpaths = [
+    "tests",
+]
 log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(name)30s - %(message)s"

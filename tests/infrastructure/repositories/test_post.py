@@ -4,7 +4,7 @@ import pytest
 from faker import Faker
 from sqlalchemy.orm import Session
 
-from app.domain.models.base import TagName, UserId
+from app.domain.models.base import PaginationParams, TagName, UserId
 from app.domain.models.post import PostCreateDomain, PostUpdateDomain
 from app.infrastructure.exceptions import EntityNotFoundError
 from app.infrastructure.models import Post, Tag, User
@@ -12,7 +12,7 @@ from app.infrastructure.repositories.post import PostSQLAlchemyRepository
 from tests.fixtures.factories.factories import PostFactory, UserFactory
 
 
-def test_get_all_posts(
+def test_get_posts(
     post_factory: PostFactory, post_repository: PostSQLAlchemyRepository
 ) -> None:
     count = 3
@@ -23,6 +23,52 @@ def test_get_all_posts(
     assert results.total == count
     assert results.limit == count
     assert len(results.items) == count
+
+
+def test_get_posts_first_page(
+    post_factory: PostFactory, post_repository: PostSQLAlchemyRepository
+) -> None:
+    count = 12
+    page = 1
+    limit = 5
+    post_factory.create_many(count)
+
+    results = post_repository.get_all(PaginationParams(page=page, limit=limit))
+
+    assert results.total == count
+    assert results.limit == limit
+    assert len(results.items) == limit
+
+
+def test_get_posts_last_page(
+    post_factory: PostFactory, post_repository: PostSQLAlchemyRepository
+) -> None:
+    count = 12
+    page = 3
+    limit = 5
+    post_factory.create_many(count)
+
+    results = post_repository.get_all(PaginationParams(page=page, limit=limit))
+
+    remaining = count - (limit * (page - 1))
+    assert results.total == count
+    assert results.limit == remaining
+    assert len(results.items) == remaining
+
+
+def test_get_posts_empty_page(
+    post_factory: PostFactory, post_repository: PostSQLAlchemyRepository
+) -> None:
+    count = 12
+    page = 5
+    limit = 5
+    post_factory.create_many(count)
+
+    results = post_repository.get_all(PaginationParams(page=page, limit=limit))
+
+    assert results.total == count
+    assert results.limit == 0
+    assert len(results.items) == 0
 
 
 def test_get_post_by_id(

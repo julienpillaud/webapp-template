@@ -5,7 +5,7 @@ from app.infrastructure.repositories.address import AddressSQLAlchemyRepository
 from tests.fixtures.factories.factories import UserFactory
 
 
-def test_get_all_addresses(
+def test_get_addresses(
     user_factory: UserFactory, address_repository: AddressSQLAlchemyRepository
 ) -> None:
     count = 3
@@ -30,6 +30,7 @@ def test_get_address_by_id(
     assert result.city == user.address.city
     assert result.zip_code == user.address.zip_code
     assert result.city == user.address.city
+    assert result.user_id == user.id
 
 
 def test_create_address(address_repository: AddressSQLAlchemyRepository) -> None:

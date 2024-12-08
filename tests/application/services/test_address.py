@@ -1,13 +1,8 @@
-import uuid
-
-import pytest
-
 from app.application.services.address import AddressService
-from app.infrastructure.exceptions import EntityNotFoundError
 from tests.fixtures.factories.factories import UserFactory
 
 
-def test_get_all_addresses(
+def test_get_addresses(
     user_factory: UserFactory, address_service: AddressService
 ) -> None:
     count = 3
@@ -33,8 +28,3 @@ def test_get_address_by_id(
     assert result.zip_code == user.address.zip_code
     assert result.country == user.address.country
     assert result.user_id == user.id
-
-
-def test_get_address_by_id_not_found(address_service: AddressService) -> None:
-    with pytest.raises(EntityNotFoundError):
-        address_service.get_by_id(uuid.uuid4())

@@ -15,18 +15,17 @@ class BaseFactory(Generic[T]):
 
     def create_one(self, **kwargs: Any) -> T:
         instance = self._make(**kwargs)
-        self.session.add(instance)
-        self.session.commit()
+        self._create([instance])
         return instance
 
-    def create_many(self, count: int, **kwargs: Any) -> list[T]:
-        instances = []
-        for _ in range(count):
-            instance = self._make(**kwargs)
-            self.session.add(instance)
-            instances.append(instance)
-        self.session.commit()
+    def create_many(self, count: int, /, **kwargs: Any) -> list[T]:
+        instances = [self._make(**kwargs) for _ in range(count)]
+        self._create(instances)
         return instances
+
+    def _create(self, instances: list[T]) -> None:
+        self.session.add_all(instances)
+        self.session.commit()
 
     def _make(self, **kwargs: Any) -> T:
         raise NotImplementedError
