@@ -5,18 +5,18 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.115.6",
     "psycopg[binary]>=3.2.3",
-    "pydantic-settings>=2.6.1",
+    "pydantic-settings>=2.7.0",
     "sqlalchemy>=2.0.36",
 ]
 
 [tool.uv]
 dev-dependencies = [
-    "coverage>=7.6.8",
+    "coverage>=7.6.9",
     "faker>=33.1.0",
     "mypy>=1.13.0",
     "pre-commit>=4.0.1",
     "pytest>=8.3.4",
-    "ruff>=0.8.2",
+    "ruff>=0.8.3",
 ]
 
 [tool.ruff]
