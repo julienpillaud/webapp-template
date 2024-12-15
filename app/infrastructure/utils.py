@@ -1,17 +1,35 @@
 import logging
 import time
+from typing import Any
+
+from sqlalchemy.engine import Connection
+from sqlalchemy.engine.interfaces import DBAPICursor, ExecutionContext
 
 logger = logging.getLogger("infra.repository")
 
 
-def before_cursor_execute(  # type: ignore
-    conn, cursor, statement, parameters, context, executemany
+class TimedExecutionContext(ExecutionContext):
+    start: float
+
+
+def before_cursor_execute(
+    conn: Connection,
+    cursor: DBAPICursor,
+    statement: str,
+    parameters: dict[str, Any],
+    context: TimedExecutionContext,
+    executemany: bool,
 ) -> None:
     context.start = time.perf_counter()
 
 
-def after_cursor_execute(  # type: ignore
-    conn, cursor, statement, parameters, context, executemany
+def after_cursor_execute(
+    conn: Connection,
+    cursor: DBAPICursor,
+    statement: str,
+    parameters: dict[str, Any],
+    context: TimedExecutionContext,
+    executemany: bool,
 ) -> None:
     end = time.perf_counter()
     duration = (end - context.start) * 1000

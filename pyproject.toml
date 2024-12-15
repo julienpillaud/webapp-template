@@ -15,6 +15,7 @@ dev-dependencies = [
     "faker>=33.1.0",
     "mypy>=1.13.0",
     "pre-commit>=4.0.1",
+    "pyright>=1.1.390",
     "pytest>=8.3.4",
     "ruff>=0.8.3",
 ]
@@ -38,6 +39,9 @@ ignore = [
 
 [tool.mypy]
 strict = true
+
+[tool.pyright]
+strict = ["app"]
 
 [tool.pytest.ini_options]
 addopts = "--log-disable=faker.factory"

@@ -21,8 +21,12 @@ class Base(DeclarativeBase):
 post_tag = Table(
     "post_tag",
     Base.metadata,
-    Column("post_id", ForeignKey("post.id", ondelete="CASCADE"), primary_key=True),
-    Column("tag_id", ForeignKey("tag.id", ondelete="CASCADE"), primary_key=True),
+    Column[uuid.UUID](
+        "post_id", ForeignKey("post.id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column[uuid.UUID](
+        "tag_id", ForeignKey("tag.id", ondelete="CASCADE"), primary_key=True
+    ),
 )
 
 
