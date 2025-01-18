@@ -175,7 +175,7 @@ def test_delete_post(
     assert author is not None
 
     for tag in post.tags:
-        deleted_tag = session.get(Tag, tag.id)  # noqa
+        session.get(Tag, tag.id)
         # TODO: handle orphan tags
         # assert deleted_tag is None
 

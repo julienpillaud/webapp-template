@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.infrastructure.models import Base
+from app.infrastructure.utils import SQLAlchemyInstrument
 
 logger = logging.getLogger(__name__)
 
@@ -35,3 +36,8 @@ def session(request: FixtureRequest, engine: Engine) -> Iterator[Session]:
             for table in reversed(Base.metadata.sorted_tables):
                 session.execute(table.delete())
             session.commit()
+
+
+@pytest.fixture(scope="session")
+def sqlalchemy_instrument(engine: Engine) -> SQLAlchemyInstrument:
+    return SQLAlchemyInstrument(engine)

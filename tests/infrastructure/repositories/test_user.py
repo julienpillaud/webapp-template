@@ -253,7 +253,7 @@ def test_delete_user(
         assert deleted_post is None
 
     for tag in [tag for post in posts for tag in post.tags]:
-        deleted_tag = session.get(Tag, tag.id)  # noqa
+        session.get(Tag, tag.id)
         # TODO: handle orphan tags
         # assert deleted_tag is None
 

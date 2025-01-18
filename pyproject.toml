@@ -4,20 +4,20 @@ version = "0.0.3"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.115.6",
-    "psycopg[binary]>=3.2.3",
-    "pydantic-settings>=2.7.0",
-    "sqlalchemy>=2.0.36",
+    "psycopg[binary]>=3.2.4",
+    "pydantic-settings>=2.7.1",
+    "sqlalchemy>=2.0.37",
 ]
 
 [tool.uv]
 dev-dependencies = [
-    "coverage>=7.6.9",
-    "faker>=33.1.0",
-    "mypy>=1.13.0",
+    "coverage>=7.6.10",
+    "faker>=33.3.1",
+    "mypy>=1.14.1",
     "pre-commit>=4.0.1",
-    "pyright>=1.1.390",
+    "pyright>=1.1.391",
     "pytest>=8.3.4",
-    "ruff>=0.8.3",
+    "ruff>=0.9.2",
 ]
 
 [tool.ruff]
@@ -41,7 +41,7 @@ ignore = [
 strict = true
 
 [tool.pyright]
-strict = ["app"]
+strict = ["app", "tests"]
 
 [tool.pytest.ini_options]
 addopts = "--log-disable=faker.factory"
