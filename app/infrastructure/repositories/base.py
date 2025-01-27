@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
 from psycopg.errors import UniqueViolation
 from sqlalchemy import Select, func, select
@@ -32,7 +32,7 @@ class SQLAlchemyRepositoryBase(
     ],
 ):
     model: type[Model_T]
-    default_loading_options: list[LoaderOption] = []
+    default_loading_options: ClassVar[list[LoaderOption]] = []
 
     def __init__(self, session: Session):
         self.session = session

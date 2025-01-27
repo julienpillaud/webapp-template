@@ -1,8 +1,9 @@
 import uuid
-from typing import Any
+from typing import Any, ClassVar
 
 from sqlalchemy import Select
 from sqlalchemy.orm import noload, selectinload
+from sqlalchemy.orm.interfaces import LoaderOption
 
 from app.domain.models.address import AddressCompactDomain
 from app.domain.models.base import UserId
@@ -23,7 +24,10 @@ class UserSQLAlchemyRepository(
 ):
     model = User
     schema = UserDomain
-    default_loading_options = [selectinload(User.address), noload(User.posts)]
+    default_loading_options: ClassVar[list[LoaderOption]] = [
+        selectinload(User.address),
+        noload(User.posts),
+    ]
 
     def update(self, entity_id: uuid.UUID, data: UserUpdateDomain, /) -> UserDomain:
         user = self._get_entity_by_id(entity_id)

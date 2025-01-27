@@ -3,7 +3,7 @@ name = "project"
 version = "0.0.3"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi[standard]>=0.115.6",
+    "fastapi[standard]>=0.115.7",
     "psycopg[binary]>=3.2.4",
     "pydantic-settings>=2.7.1",
     "sqlalchemy>=2.0.37",
@@ -12,12 +12,13 @@ dependencies = [
 [tool.uv]
 dev-dependencies = [
     "coverage>=7.6.10",
-    "faker>=33.3.1",
+    "docker>=7.1.0",
+    "faker>=35.0.0",
     "mypy>=1.14.1",
-    "pre-commit>=4.0.1",
+    "pre-commit>=4.1.0",
     "pyright>=1.1.391",
     "pytest>=8.3.4",
-    "ruff>=0.9.2",
+    "ruff>=0.9.3",
 ]
 
 [tool.ruff]
@@ -31,7 +32,8 @@ select = [
     "B",  # flake8-bugbear
     "SIM",  # flake8-simplify
     "I",  # isort
-    "PL"  # Pylint
+    "PL",  # Pylint
+    "RUF",
 ]
 ignore = [
     "PLR0913"  # Too many arguments in function definition (6 > 5)
@@ -40,8 +42,14 @@ ignore = [
 [tool.mypy]
 strict = true
 
+[[tool.mypy.overrides]]
+module = ["docker.*"]
+ignore_missing_imports = true
+
 [tool.pyright]
-strict = ["app", "tests"]
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "strict"
 
 [tool.pytest.ini_options]
 addopts = "--log-disable=faker.factory"

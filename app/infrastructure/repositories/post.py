@@ -1,6 +1,8 @@
 import uuid
+from typing import ClassVar
 
 from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm.interfaces import LoaderOption
 
 from app.domain.models.post import PostCreateDomain, PostDomain, PostUpdateDomain
 from app.infrastructure.models import Post, Tag
@@ -20,7 +22,7 @@ class PostSQLAlchemyRepository(
 ):
     model = Post
     schema = PostDomain
-    default_loading_options = [selectinload(Post.tags)]
+    default_loading_options: ClassVar[list[LoaderOption]] = [selectinload(Post.tags)]
 
     def __init__(self, session: Session, user_repository: UserSQLAlchemyRepository):
         super().__init__(session)

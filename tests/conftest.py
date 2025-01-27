@@ -1,7 +1,6 @@
 import logging
 
 import pytest
-from pytest import Parser
 
 from app.core.config import Settings
 
@@ -13,10 +12,6 @@ pytest_plugins = [
     "tests.fixtures.services",
     "tests.fixtures.factories.fixtures",
 ]
-
-
-def pytest_addoption(parser: Parser) -> None:
-    parser.addoption("--db", action="store_true", default=False)
 
 
 @pytest.fixture(scope="session")

@@ -21,3 +21,14 @@ class Settings(BaseSettings):
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
         )
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def PSYCOPG_DSN(self) -> str:
+        return (
+            f"dbname={self.POSTGRES_DB} "
+            f"user={self.POSTGRES_USER} "
+            f"password={self.POSTGRES_PASSWORD} "
+            f"host={self.POSTGRES_SERVER} "
+            f"port={self.POSTGRES_PORT}"
+        )
