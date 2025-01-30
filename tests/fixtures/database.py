@@ -1,4 +1,3 @@
-import contextlib
 import logging
 import time
 from collections.abc import Iterator
@@ -32,7 +31,7 @@ def wait_for_database_ready(dsn: str, timeout: int = 10) -> None:
         if time.time() - start_time > timeout:
             raise TimeoutError
 
-        time.sleep(1)
+        time.sleep(0.1)
 
 
 @pytest.fixture(scope="session")
@@ -42,38 +41,33 @@ def engine(settings: Settings) -> Engine:
 
 
 @pytest.fixture(scope="session")
-def setup_db(settings: Settings, engine: Engine) -> Iterator[None]:
-    container_name = "postgres"
+def setup_db(settings: Settings, engine: Engine) -> None:
+    container_name = "postgres-webapp-template"
     client = docker.from_env()
 
-    with contextlib.suppress(NotFound):
-        existing_container = client.containers.get(container_name)
-        existing_container.stop()
-        existing_container.remove()
+    try:
+        container = client.containers.get(container_name)
+        if container.status != "running":
+            container.start()
+    except NotFound:
+        client.containers.run(
+            "postgres:latest",
+            name=container_name,
+            environment={
+                "POSTGRES_USER": settings.POSTGRES_USER,
+                "POSTGRES_PASSWORD": settings.POSTGRES_PASSWORD,
+                "POSTGRES_DB": settings.POSTGRES_DB,
+            },
+            ports={"5432/tcp": settings.POSTGRES_PORT},
+            detach=True,
+        )
+        wait_for_database_ready(dsn=settings.PSYCOPG_DSN)
 
-    container = client.containers.run(
-        "postgres:latest",
-        name="postgres",
-        environment={
-            "POSTGRES_USER": settings.POSTGRES_USER,
-            "POSTGRES_PASSWORD": settings.POSTGRES_PASSWORD,
-            "POSTGRES_DB": settings.POSTGRES_DB,
-        },
-        ports={"5432/tcp": settings.POSTGRES_PORT},
-        detach=True,
-    )
-    wait_for_database_ready(dsn=settings.PSYCOPG_DSN)
     logger.info("Postgres database ready")
-
     logger.info("Drop all tables")
     Base.metadata.drop_all(engine)
     logger.info("Create all tables")
     Base.metadata.create_all(engine)
-
-    yield
-
-    container.stop()
-    container.remove()
 
 
 @pytest.fixture
