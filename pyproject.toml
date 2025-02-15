@@ -3,22 +3,20 @@ name = "project"
 version = "0.0.3"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi[standard]>=0.115.7",
+    "fastapi[standard]>=0.115.8",
     "psycopg[binary]>=3.2.4",
     "pydantic-settings>=2.7.1",
-    "sqlalchemy>=2.0.37",
+    "sqlalchemy>=2.0.38",
 ]
 
 [tool.uv]
 dev-dependencies = [
-    "coverage>=7.6.10",
+    "coverage>=7.6.12",
     "docker>=7.1.0",
-    "faker>=35.0.0",
-    "mypy>=1.14.1",
-    "pre-commit>=4.1.0",
-    "pyright>=1.1.391",
+    "faker>=36.1.1",
+    "pyright>=1.1.394",
     "pytest>=8.3.4",
-    "ruff>=0.9.3",
+    "ruff>=0.9.6",
 ]
 
 [tool.ruff]
@@ -38,13 +36,6 @@ select = [
 ignore = [
     "PLR0913"  # Too many arguments in function definition (6 > 5)
 ]
-
-[tool.mypy]
-strict = true
-
-[[tool.mypy.overrides]]
-module = ["docker.*"]
-ignore_missing_imports = true
 
 [tool.pyright]
 venvPath = "."

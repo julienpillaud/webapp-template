@@ -23,32 +23,45 @@ class QueryInfo(BaseModel):
 
 
 class SQLAlchemyInstrument:
-    def __init__(self, engine: Engine):
-        self._enabled = False
-        self.queries: list[QueryInfo] = []
-        self.engine = engine
+    _instance: Self | None = None
+    _enabled: bool
+    _queries: list[QueryInfo]
 
-        event.listen(Engine, "before_cursor_execute", self.before_cursor_execute)
-        event.listen(Engine, "after_cursor_execute", self.after_cursor_execute)
+    def __new__(cls) -> Self:
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._enabled = False
+            cls._instance._queries = []
 
-    def __del__(self) -> None:
-        event.remove(Engine, "before_cursor_execute", self.before_cursor_execute)
-        event.remove(Engine, "after_cursor_execute", self.after_cursor_execute)
+            event.listen(
+                Engine,
+                "before_cursor_execute",
+                cls._instance._before_cursor_execute,
+            )
+            event.listen(
+                Engine,
+                "after_cursor_execute",
+                cls._instance._after_cursor_execute,
+            )
+
+        return cls._instance
 
     @property
     def queries_count(self) -> int:
-        return len(self.queries)
+        return len(self._queries)
 
+    @classmethod
     @contextmanager
-    def record(self) -> Iterator[Self]:
-        self._enabled = True
-        self.queries = []
+    def record(cls) -> Iterator[Self]:
+        instance = cls()
+        instance._enabled = True
+        instance._queries = []
         try:
-            yield self
+            yield instance
         finally:
-            self._enabled = False
+            instance._enabled = False
 
-    def before_cursor_execute(
+    def _before_cursor_execute(
         self,
         conn: Connection,
         cursor: DBAPICursor,
@@ -62,7 +75,7 @@ class SQLAlchemyInstrument:
 
         context.start = time.perf_counter()
 
-    def after_cursor_execute(
+    def _after_cursor_execute(
         self,
         conn: Connection,
         cursor: DBAPICursor,
@@ -81,4 +94,4 @@ class SQLAlchemyInstrument:
         query_info = QueryInfo(
             statement=statement, parameters=parameters, duration=duration
         )
-        self.queries.append(query_info)
+        self._queries.append(query_info)

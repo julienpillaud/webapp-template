@@ -20,12 +20,8 @@ def users(user_factory: UserFactory, post_factory: PostFactory) -> list[User]:
     return users
 
 
-def test_select(
-    session: Session,
-    users: list[User],
-    sqlalchemy_instrument: SQLAlchemyInstrument,
-) -> None:
-    with sqlalchemy_instrument.record():
+def test_select(session: Session, users: list[User]) -> None:
+    with SQLAlchemyInstrument.record() as sqlalchemy_instrument:
         stmt = select(User).where(User.username == "test")
         users_db = session.scalars(stmt).all()
         assert len(users_db) == numbers_of_test_users
@@ -37,12 +33,8 @@ def test_select(
     assert sqlalchemy_instrument.queries_count == number_of_users + 1
 
 
-def test_selectinload(
-    session: Session,
-    users: list[User],
-    sqlalchemy_instrument: SQLAlchemyInstrument,
-) -> None:
-    with sqlalchemy_instrument.record():
+def test_selectinload(session: Session, users: list[User]) -> None:
+    with SQLAlchemyInstrument.record() as sqlalchemy_instrument:
         stmt = (
             select(User)
             .options(selectinload(User.address), selectinload(User.posts))
@@ -58,12 +50,8 @@ def test_selectinload(
     assert sqlalchemy_instrument.queries_count == 3  # noqa
 
 
-def test_joinedload(
-    session: Session,
-    users: list[User],
-    sqlalchemy_instrument: SQLAlchemyInstrument,
-) -> None:
-    with sqlalchemy_instrument.record():
+def test_joinedload(session: Session, users: list[User]) -> None:
+    with SQLAlchemyInstrument.record() as sqlalchemy_instrument:
         stmt = (
             select(User)
             .options(joinedload(User.address), joinedload(User.posts))

@@ -45,5 +45,4 @@ cov:
 lint:
 	uv run ruff format
 	uv run ruff check --fix || true
-	uv run mypy . || true
 	uv run pyright

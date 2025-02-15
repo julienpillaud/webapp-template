@@ -11,7 +11,6 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.infrastructure.models import Base
-from app.infrastructure.utils import SQLAlchemyInstrument
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +82,6 @@ def session(setup_db: Iterator[None], engine: Engine) -> Iterator[Session]:
         session.commit()
 
 
-@pytest.fixture(scope="session")
-def sqlalchemy_instrument(engine: Engine) -> SQLAlchemyInstrument:
-    return SQLAlchemyInstrument(engine)
+# @pytest.fixture(scope="session")
+# def sqlalchemy_instrument() -> SQLAlchemyInstrument:
+#     return SQLAlchemyInstrument()
