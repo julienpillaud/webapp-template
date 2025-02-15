@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 from collections.abc import Iterator
 
@@ -40,7 +41,10 @@ def engine(settings: Settings) -> Engine:
 
 
 @pytest.fixture(scope="session")
-def setup_db(settings: Settings, engine: Engine) -> None:
+def setup_container(settings: Settings) -> None:
+    if os.getenv("CI"):
+        return
+
     container_name = "postgres-webapp-template"
     client = docker.from_env()
 
@@ -62,7 +66,9 @@ def setup_db(settings: Settings, engine: Engine) -> None:
         )
         wait_for_database_ready(dsn=settings.PSYCOPG_DSN)
 
-    logger.info("Postgres database ready")
+
+@pytest.fixture(scope="session")
+def setup_db(setup_container: None, engine: Engine) -> None:
     logger.info("Drop all tables")
     Base.metadata.drop_all(engine)
     logger.info("Create all tables")
@@ -80,8 +86,3 @@ def session(setup_db: Iterator[None], engine: Engine) -> Iterator[Session]:
         for table in reversed(Base.metadata.sorted_tables):
             session.execute(table.delete())
         session.commit()
-
-
-# @pytest.fixture(scope="session")
-# def sqlalchemy_instrument() -> SQLAlchemyInstrument:
-#     return SQLAlchemyInstrument()
